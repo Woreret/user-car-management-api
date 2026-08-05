@@ -2,7 +2,7 @@ import { json } from "express";
 import { comparePassword, createUser, deleteUserById, findUser, updateUser } from "../services/users.service.js";
 import { generateToken } from "../services/token.service.js";
 
-const registerUser = async(req,res)=>{
+const registerUser = async(req,res,next)=>{
         try {
             const {name,email,role,password} = req.body;
 
@@ -20,10 +20,10 @@ const registerUser = async(req,res)=>{
                 return res.status(400).json({ message: error.message });
             }
             
-            res.status(500).json({message:"Internal server error", error: error.message})
+            next(error);
         }
 }
-const loginUser = async(req,res)=>{
+const loginUser = async(req,res,next)=>{
     try {
         const {id,email,password} = req.body;
 
@@ -58,10 +58,10 @@ const loginUser = async(req,res)=>{
         });
         
     } catch (error) {
-        res.status(500).json({message:"Internal server error", error: error.message})
+        next(error);
     }
 }
-const updateUserName = async(req,res)=>{
+const updateUserName = async(req,res,next)=>{
     try {
         const {newName} = req.body;
 
@@ -78,10 +78,10 @@ const updateUserName = async(req,res)=>{
                 return res.status(400).json({ message: error.message });
             }
             
-        res.status(500).json({message:"Internal server error", error: error.message})
+        next(error);
     }
 }
-const deleteUser = async(req,res)=>{
+const deleteUser = async(req,res,next)=>{
     try {
         const userId = req.user.id;
 
@@ -91,9 +91,9 @@ const deleteUser = async(req,res)=>{
     } catch (error) {
         if (error.message === 'User not found') {
                 return res.status(400).json({ message: error.message });
-            }
+        }
             
-        res.status(500).json({message:"Internal server error", error: error.message})
+        next(error);
     }
 }
 
