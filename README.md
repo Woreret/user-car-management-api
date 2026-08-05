@@ -1,7 +1,7 @@
 # REST API for User and Car Management
 
 ## Description
-A RESTful API built with Node.js and Express.js that handles secure user authentication, profile management, and related data entities (cars). It uses PostgreSQL as a relational database and implements JSON Web Tokens (JWT) for secure, stateless authentication. Passwords are cryptographically hashed using bcrypt.
+A RESTful API built with Node.js and Express.js that handles secure user authentication, profile management, and related data entities (cars). It uses PostgreSQL as a relational database and implements JSON Web Tokens (JWT) for secure, stateless authentication. Passwords are cryptographically hashed using bcrypt. OpenAPI 3.0 documentation is integrated via Swagger UI.
 
 ## Technologies Used
 - Runtime: Node.js
@@ -10,13 +10,15 @@ A RESTful API built with Node.js and Express.js that handles secure user authent
 - Authentication: JSON Web Tokens (JWT)
 - Security: bcrypt (password hashing)
 - Environment Management: dotenv
+- API Documentation: Swagger UI (swagger-ui-express, swagger-jsdoc)
 
 ## Features
 - User Authentication: Secure registration and login endpoints.
 - Authorization: JWT-based middleware to protect private routes.
 - Profile Management: Authenticated users can update their profile information or delete their account.
-- Entity Management: Authenticated users can add vehicles to their profile.
+- Entity Management: Authenticated users can add, list, update, and delete vehicles in their garage.
 - Relational Integrity: Implements cascading deletes (deleting a user automatically removes their associated vehicles from the database).
+- API Documentation: Interactive Swagger UI endpoint available at `/api-docs`.
 
 ## Prerequisites
 - Node.js (v14 or higher recommended)
@@ -78,6 +80,12 @@ To start the server in production mode:
 npm start
 ```
 
+## API Documentation
+Interactive OpenAPI 3.0 documentation is available when running the application at:
+```
+http://localhost:4000/api-docs
+```
+
 ## API Endpoints
 
 ### Public Routes
@@ -88,3 +96,6 @@ npm start
 - `PUT /api/v1/users/updateUserName` - Update the authenticated user's name. Requires `newName`.
 - `DELETE /api/v1/users/deleteUser` - Delete the authenticated user's account and associated data.
 - `POST /api/v1/users/addCar` - Add a vehicle to the authenticated user's garage. Requires `brand`, `model`, and `year`.
+- `GET /api/v1/users/my` - Retrieve all vehicles belonging to the authenticated user.
+- `PUT /api/v1/users/updateCar/:id` - Update a vehicle by ID. Requires `brand`, `model`, and `year`.
+- `DELETE /api/v1/users/deleteCar/:id` - Delete a vehicle by ID.
