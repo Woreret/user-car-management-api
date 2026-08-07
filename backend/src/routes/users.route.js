@@ -1,7 +1,8 @@
 import { Router } from "express";
-import { deleteUser, loginUser, registerUser, updateUserName } from "../controllers/user.controller.js";
+import { deleteUser, getAllUsers, loginUser, registerUser, updateUserName } from "../controllers/user.controller.js";
 import { addCar, deleteCar, getCars, updateCar } from "../controllers/car.controller.js";
 import { authMiddleware } from "../middleware/auth.middleware.js";
+import { authorize } from "../middleware/authorize.middleware.js";
 
 const router = Router();
 
@@ -105,6 +106,24 @@ router.put('/updateUserName', authMiddleware, updateUserName);
  *         description: Unauthorized (missing or invalid token)
  */
 router.delete('/deleteUser', authMiddleware, deleteUser);
+
+/**
+ * @openapi
+ * /api/v1/users/all:
+ *   get:
+ *     summary: Retrieve all registered users (Admin only)
+ *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: List of all users
+ *       401:
+ *         description: Unauthorized
+ *       403:
+ *         description: Forbidden (requires admin role)
+ */
+router.get('/all', authMiddleware, authorize('admin'), getAllUsers);
 
 /**
  * @openapi

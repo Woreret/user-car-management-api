@@ -1,9 +1,10 @@
 import jwt from 'jsonwebtoken';
 
-const generateToken = (Uid, Uemail)=>{
+const generateToken = (Uid, Uemail, Urole)=>{
     const payload ={
         id: Uid,
-        email: Uemail
+        email: Uemail,
+        role: Urole
     }
     const secret = process.env.SECRET_KEY;
 

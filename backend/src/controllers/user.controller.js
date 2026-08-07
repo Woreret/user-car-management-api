@@ -1,105 +1,104 @@
-import { json } from "express";
-import { comparePassword, createUser, deleteUserById, findUser, updateUser } from "../services/users.service.js";
+import { comparePassword, createUser, deleteUserById, findAllUsers, findUser, updateUser } from "../services/users.service.js";
 import { generateToken } from "../services/token.service.js";
+import { BadRequestError } from "../utils/appError.js";
 
-const registerUser = async(req,res,next)=>{
-        try {
-            const {name,email,role,password} = req.body;
-
-            if(!name || !email || !password) return res.status(400).json({
-                message:"All field are important"
-            })
-
-            const emailLower = email.toLowerCase();
-
-            await createUser(name,emailLower,role,password);
-
-            res.status(201).send(`User ${name} added`);
-        } catch (error) {
-            if (error.message === 'User already exist') {
-                return res.status(400).json({ message: error.message });
-            }
-            
-            next(error);
-        }
-}
-const loginUser = async(req,res,next)=>{
+const registerUser = async (req, res, next) => {
     try {
-        const {id,email,password} = req.body;
+        const { name, email, password } = req.body;
 
-        if(!email || !password) return res.status(400).json({
-            message: "Need to fiel all field"
-        });
+        if (!name || !email || !password) {
+            throw new BadRequestError("All fields are required");
+        }
 
         const emailLower = email.toLowerCase();
+        await createUser(name, emailLower, password);
 
+        res.status(201).json({ message: `User ${name} added` });
+    } catch (error) {
+        next(error);
+    }
+};
+
+const loginUser = async (req, res, next) => {
+    try {
+        const { email, password } = req.body;
+
+        if (!email || !password) {
+            throw new BadRequestError("All fields are required");
+        }
+
+        const emailLower = email.toLowerCase();
         const user = await findUser(emailLower);
 
-        if(!user) return res.status(400).json({
-            message: "User not found"
-        });
+        if (!user) {
+            throw new BadRequestError("Invalid email or password");
+        }
 
         const isMatch = await comparePassword(password, user.password);
+        if (!isMatch) {
+            throw new BadRequestError("Invalid email or password");
+        }
 
-        if(!isMatch) return res.status(400).json({
-            message: "Invalid password"
-        })
+        const jwt = generateToken(user.id, user.email, user.role);
 
-        const jwt = generateToken(user.id,user.email);
-        
         res.status(200).json({
             message: "Logged In!",
             user: {
-                id: user.id, 
+                id: user.id,
                 name: user.name,
                 email: user.email,
+                role: user.role,
                 token: jwt
             },
         });
-        
     } catch (error) {
         next(error);
     }
-}
-const updateUserName = async(req,res,next)=>{
+};
+
+const updateUserName = async (req, res, next) => {
     try {
-        const {newName} = req.body;
+        const { newName } = req.body;
 
         if (!newName) {
-            return res.status(400).json({ message: "New name is required" });
+            throw new BadRequestError("New name is required");
         }
         const userId = req.user.id;
-        
+
         await updateUser(newName, userId);
 
-        res.status(200).send(`Update user name to ${newName}`);
+        res.status(200).json({ message: `Update user name to ${newName}` });
     } catch (error) {
-        if (error.message === 'User not found') {
-                return res.status(400).json({ message: error.message });
-            }
-            
         next(error);
     }
-}
-const deleteUser = async(req,res,next)=>{
+};
+
+const deleteUser = async (req, res, next) => {
     try {
         const userId = req.user.id;
 
         await deleteUserById(userId);
 
-        res.status(200).send(`User deleted`);
+        res.status(200).json({ message: "User deleted" });
     } catch (error) {
-        if (error.message === 'User not found') {
-                return res.status(400).json({ message: error.message });
-        }
-            
         next(error);
     }
-}
+};
 
-export{
+const getAllUsers = async (req, res, next) => {
+    try {
+        const users = await findAllUsers();
+
+        return res.status(200).json(users);
+    } catch (error) {
+        next(error);
+    }
+};
+
+export {
     registerUser,
     loginUser,
     updateUserName,
-    deleteUser
-}
+    deleteUser,
+    getAllUsers
+};

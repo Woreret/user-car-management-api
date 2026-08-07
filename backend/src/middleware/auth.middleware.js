@@ -1,28 +1,23 @@
 import jwt from 'jsonwebtoken';
+import { UnauthorizedError, ForbiddenError } from '../utils/appError.js';
 
-const authMiddleware = async(req,res,next) =>{
+const authMiddleware = async (req, res, next) => {
     const authHeader = req.headers.authorization;
 
-    if(!authHeader){
-        return res.status(401).json({
-            message:"Unauthorized"
-        })
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+        return next(new UnauthorizedError('Unauthorized: Token missing or malformed'));
     }
 
     const secret = process.env.SECRET_KEY;
-
-    const tokenSplit = authHeader.split(" ");
+    const token = authHeader.split(' ')[1];
 
     try {
-        const verify = jwt.verify(tokenSplit[1], secret);
+        const verify = jwt.verify(token, secret);
         req.user = verify;
         return next();
-
     } catch (error) {
-        return res.status(403).json({
-            message:"Forbidden"
-        })
+        return next(new ForbiddenError('Forbidden: Invalid or expired token'));
     }
-}
+};
 
-export{authMiddleware};
+export { authMiddleware };

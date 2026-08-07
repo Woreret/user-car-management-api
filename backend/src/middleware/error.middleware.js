@@ -1,9 +1,15 @@
-const errorCatch = (err,req,res,next)=>{
-    console.log(err);
+import { AppError } from "../utils/appError.js";
 
-    res.status(500).json({message:"Internal server error", error: err.message})
-}
+const errorCatch = (err, req, res, next) => {
+    const statusCode = err.statusCode || 500;
+    const status = err.status || 'error';
 
-export{
+    res.status(statusCode).json({
+        status: status,
+        message: err.message || 'Internal server error'
+    });
+};
+
+export {
     errorCatch
-}
+};
