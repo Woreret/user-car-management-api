@@ -13,7 +13,7 @@ swaggerDocs(app);
 
 app.use("/api/v1/users", userRouter);
 
-app.all("*", (req, res, next) => {
+app.all("/*splat", (req, res, next) => {
     next(new NotFoundError(`Can't find ${req.originalUrl} on this server!`));
 });
 

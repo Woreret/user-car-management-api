@@ -3,6 +3,9 @@ import { deleteUser, getAllUsers, loginUser, registerUser, updateUserName } from
 import { addCar, deleteCar, getCars, updateCar } from "../controllers/car.controller.js";
 import { authMiddleware } from "../middleware/auth.middleware.js";
 import { authorize } from "../middleware/authorize.middleware.js";
+import { validate } from "../middleware/validate.middleware.js";
+import { loginSchema, registerSchema } from "../validators/user.validator.js";
+import { registerCar } from "../validators/car.validator.js";
 
 const router = Router();
 
@@ -28,7 +31,7 @@ const router = Router();
  *             schema:
  *               $ref: '#/components/schemas/ErrorResponse'
  */
-router.post('/register', registerUser);
+router.post('/register',validate(registerSchema) ,registerUser);
 
 /**
  * @openapi
@@ -63,7 +66,7 @@ router.post('/register', registerUser);
  *             schema:
  *               $ref: '#/components/schemas/ErrorResponse'
  */
-router.post('/login', loginUser);
+router.post('/login',validate(loginSchema), loginUser);
 
 /**
  * @openapi
@@ -145,7 +148,7 @@ router.get('/all', authMiddleware, authorize('admin'), getAllUsers);
  *       401:
  *         description: Unauthorized (missing or invalid token)
  */
-router.post('/addCar', authMiddleware, addCar);
+router.post('/addCar', authMiddleware, validate(registerCar), addCar);
 
 /**
  * @openapi
@@ -202,7 +205,7 @@ router.get('/my', authMiddleware, getCars);
  *       401:
  *         description: Unauthorized (missing or invalid token)
  */
-router.put('/updateCar/:id', authMiddleware, updateCar);
+router.put('/updateCar/:id', authMiddleware, validate(updateCar), updateCar);
 
 /**
  * @openapi
