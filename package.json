@@ -1,17 +1,22 @@
 {
   "name": "cto",
   "version": "1.0.0",
-  "description": "",
+  "description": "A RESTful API built with Node.js and Express.js that handles secure user authentication, profile management, and related data entities (cars). It uses PostgreSQL as a relational database and implements JSON Web Tokens (JWT) for secure, stateless authentication. Passwords are cryptographically hashed using bcrypt. OpenAPI 3.0 documentation is integrated via Swagger UI.",
   "main": "index.js",
   "scripts": {
-    "start": "node backend/src/index.js",
-    "dev": "nodemon backend/src/index.js"
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "dev": "tsx watch backend/src/index.ts"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "type": "module",
   "dependencies": {
+    "@types/bcrypt": "^6.0.0",
+    "@types/express": "^5.0.6",
+    "@types/jsonwebtoken": "^9.0.10",
+    "@types/node": "^26.2.0",
     "bcrypt": "^6.0.0",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
@@ -22,6 +27,16 @@
     "zod": "^4.4.3"
   },
   "devDependencies": {
-    "nodemon": "^3.1.14"
-  }
+    "nodemon": "^3.1.14",
+    "tsx": "^4.23.12",
+    "typescript": "^7.0.2"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Woreret/user-car-management-api.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Woreret/user-car-management-api/issues"
+  },
+  "homepage": "https://github.com/Woreret/user-car-management-api#readme"
 }

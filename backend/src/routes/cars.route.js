@@ -1,11 +1,15 @@
 import { Router } from "express";
 import { addCar, deleteCar, getCars, updateCar } from "../controllers/car.controller.js";
 import { authMiddleware } from "../middleware/auth.middleware.js";
+import { authorize } from "../middleware/authorize.middleware.js";
 import { validate } from "../middleware/validate.middleware.js";
-import { registerCar, updateCar as updateCarSchema } from "../validators/car.validator.js";
+import { registerCar } from "../validators/car.validator.js";
+import { updateCarScheme } from "../validators/car.validator.js";
+
+
+
 
 const router = Router();
-
 /**
  * @openapi
  * /api/v1/cars/addCar:
@@ -83,7 +87,7 @@ router.get('/my', authMiddleware, getCars);
  *       401:
  *         description: Unauthorized (missing or invalid token)
  */
-router.put('/updateCar/:id', authMiddleware, validate(updateCarSchema), updateCar);
+router.put('/updateCar/:id', authMiddleware, validate(updateCarScheme), updateCar);
 
 /**
  * @openapi

@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 const registerCar = z.object({
     brand: z.string().min(2, 'Brand must be at least 2 characters'),
-    mark: z.string().min(2, 'Mark must be at least 2 characters'),
+    model: z.string().min(2, 'Model must be at least 2 characters'),
     year: z.coerce
         .number()
         .int('Year must be an integer')
@@ -10,9 +10,18 @@ const registerCar = z.object({
         .max(new Date().getFullYear(), 'Year cannot be in the future')
 });
 
-const updateCar = registerCar.partial();
+type RegisterCarInput = z.infer<typeof registerCar>;
+
+const updateCarScheme = registerCar.partial();
+
+type UpdateCarInput = z.infer<typeof updateCarScheme>;
 
 export {
     registerCar,
-    updateCar
+    updateCarScheme
+};
+
+export type {
+    RegisterCarInput,
+    UpdateCarInput
 };
