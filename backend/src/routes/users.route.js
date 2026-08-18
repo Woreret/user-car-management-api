@@ -1,11 +1,9 @@
 import { Router } from "express";
 import { deleteUser, getAllUsers, loginUser, registerUser, updateUserName } from "../controllers/user.controller.js";
-import { addCar, deleteCar, getCars, updateCar } from "../controllers/car.controller.js";
 import { authMiddleware } from "../middleware/auth.middleware.js";
 import { authorize } from "../middleware/authorize.middleware.js";
 import { validate } from "../middleware/validate.middleware.js";
 import { loginSchema, registerSchema } from "../validators/user.validator.js";
-import { registerCar } from "../validators/car.validator.js";
 
 const router = Router();
 
@@ -31,7 +29,7 @@ const router = Router();
  *             schema:
  *               $ref: '#/components/schemas/ErrorResponse'
  */
-router.post('/register',validate(registerSchema) ,registerUser);
+router.post('/register', validate(registerSchema), registerUser);
 
 /**
  * @openapi
@@ -66,7 +64,7 @@ router.post('/register',validate(registerSchema) ,registerUser);
  *             schema:
  *               $ref: '#/components/schemas/ErrorResponse'
  */
-router.post('/login',validate(loginSchema), loginUser);
+router.post('/login', validate(loginSchema), loginUser);
 
 /**
  * @openapi
@@ -127,111 +125,5 @@ router.delete('/deleteUser', authMiddleware, deleteUser);
  *         description: Forbidden (requires admin role)
  */
 router.get('/all', authMiddleware, authorize('admin'), getAllUsers);
-
-/**
- * @openapi
- * /api/v1/users/addCar:
- *   post:
- *     summary: Add a new vehicle to authenticated user's profile
- *     tags: [Cars]
- *     security:
- *       - bearerAuth: []
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             $ref: '#/components/schemas/CarInput'
- *     responses:
- *       201:
- *         description: Vehicle added successfully
- *       401:
- *         description: Unauthorized (missing or invalid token)
- */
-router.post('/addCar', authMiddleware, validate(registerCar), addCar);
-
-/**
- * @openapi
- * /api/v1/users/my:
- *   get:
- *     summary: Retrieve all vehicles belonging to authenticated user
- *     tags: [Cars]
- *     security:
- *       - bearerAuth: []
- *     responses:
- *       200:
- *         description: Array of vehicle objects
- *         content:
- *           application/json:
- *             schema:
- *               type: array
- *               items:
- *                 $ref: '#/components/schemas/CarResponse'
- *       404:
- *         description: No cars found for this user
- *       401:
- *         description: Unauthorized (missing or invalid token)
- */
-router.get('/my', authMiddleware, getCars);
-
-/**
- * @openapi
- * /api/v1/users/updateCar/{id}:
- *   put:
- *     summary: Update a vehicle by ID
- *     tags: [Cars]
- *     security:
- *       - bearerAuth: []
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: integer
- *         description: Vehicle ID
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             $ref: '#/components/schemas/CarInput'
- *     responses:
- *       200:
- *         description: Vehicle updated successfully
- *       403:
- *         description: Access denied (vehicle belongs to another user)
- *       404:
- *         description: Vehicle not found
- *       401:
- *         description: Unauthorized (missing or invalid token)
- */
-router.put('/updateCar/:id', authMiddleware, validate(updateCar), updateCar);
-
-/**
- * @openapi
- * /api/v1/users/deleteCar/{id}:
- *   delete:
- *     summary: Delete a vehicle by ID
- *     tags: [Cars]
- *     security:
- *       - bearerAuth: []
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: integer
- *         description: Vehicle ID
- *     responses:
- *       200:
- *         description: Vehicle deleted successfully
- *       403:
- *         description: Access denied (vehicle belongs to another user)
- *       404:
- *         description: Vehicle not found
- *       401:
- *         description: Unauthorized (missing or invalid token)
- */
-router.delete('/deleteCar/:id', authMiddleware, deleteCar);
 
 export default router;
